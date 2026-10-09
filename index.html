@@ -1,0 +1,1221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>saesh</title>
+<meta name="description" content="saesh makes music from a computer. the soloist is out now.">
+<meta property="og:title" content="saesh">
+<meta property="og:description" content="music from my computer. the soloist is out now.">
+<meta property="og:image" content="https://saesh000.net/cover.jpg">
+<meta property="og:url" content="https://saesh000.net/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://saesh000.net/">
+<link rel="icon" href="cover.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style id="site-css">
+/* layout: one long lowercase scroll in the campthehills mold. a full-bleed cliff-and-sea photo hero with a giant wordmark,
+   then misty paper sections, each opened by a huge heading trailed by a dashed rule; the fog marsh behind the plugins band, the horses on the
+   clifftop behind contact, and the pack as one photo card. colors come from the photos: fog, moss, wet black rock, slate sea */
+:root{
+  --paper:#eef0ec;      /* fog */
+  --ink:#121613;        /* wet volcanic rock */
+  --muted:#647069;
+  --line:#d5dbd4;
+  --panel:#e3e8e1;
+  --dash:#2f6b63;       /* slate sea */
+  --bloom:#b4452e;      /* the red roof down by the water */
+  --night:#0d1210;
+  --night-ink:#eef1ec;
+  --night-muted:#9aa69f;
+  --night-line:#36413b;
+  --night-moss:#b9dd9a;
+  --night-sea:#9fd0c6;
+  /* photo surfaces look the same in either theme */
+  --hero-ink:#f4f6f2;
+  --shade:8 12 10;
+  --font-display:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  --font-body:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --gutter:clamp(16px,4vw,40px);
+  --max:1240px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0e1210; --ink:#e8ece6; --muted:#9aa69f; --line:#27302b; --panel:#151b18;
+    --dash:#8fc9be; --bloom:#e9876d; --night:#0a0e0c; --night-line:#34403a;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0e1210; --ink:#e8ece6; --muted:#9aa69f; --line:#27302b; --panel:#151b18;
+    --dash:#8fc9be; --bloom:#e9876d; --night:#0a0e0c; --night-line:#34403a;
+  color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 var(--font-body);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--dash);outline-offset:3px}
+.mono{font-family:var(--font-mono)}
+.dot{display:inline-block;flex:none;width:7px;height:7px;border-radius:50%;background:var(--dash)}
+.wrap{max-width:var(--max);margin-inline:auto;padding-inline:var(--gutter)}
+
+/* ---------- top bar ---------- */
+.bar{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:calc(env(safe-area-inset-top,0px) + 14px) var(--gutter) 14px;border-bottom:1px solid transparent;pointer-events:none;
+  transition:background-color .3s,border-color .3s}
+.bar > *{pointer-events:auto}
+.bar.solid{background:color-mix(in srgb,var(--paper) 90%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom-color:var(--line)}
+.bar-logo{font-size:16px;letter-spacing:-.02em;text-decoration:none;opacity:0;transition:opacity .3s}
+.bar-pill{position:absolute;left:50%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:9px;height:34px;padding:0 14px;
+  border:1px solid var(--ink);font-size:13px;text-decoration:none;white-space:nowrap;opacity:0;transition:opacity .3s}
+.bar-pill .sl{color:var(--muted)}
+.bar:not(.solid) .bar-logo,.bar:not(.solid) .bar-pill{pointer-events:none}
+.bar.solid .bar-logo,.bar.solid .bar-pill{opacity:1}
+.bar-actions{display:flex;gap:8px;margin-left:auto}
+.bar-btn{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);
+  font:inherit;font-size:13px;line-height:1;cursor:pointer;text-decoration:none;transition:background-color .15s,color .15s}
+.bar-btn:hover{background:var(--ink);color:var(--paper)}
+.bar-btn svg{width:14px;height:14px}
+@media (max-width:900px){.bar-pill{display:none}}
+@media (max-width:520px){.bar-btn .lbl-share{display:none}.bar-btn{padding:0 11px}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;isolation:isolate;min-height:clamp(560px,94svh,920px);background:#3b4540;color:var(--hero-ink)}
+.hero-wash{position:absolute;inset:0;z-index:-4}
+.hero-wash img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 55%}
+.hero-wash::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgb(var(--shade) / .5),rgb(var(--shade) / 0) 28%),linear-gradient(to top,rgb(var(--shade) / .6),rgb(var(--shade) / 0) 50%)}
+.ticker{position:absolute;z-index:3;top:calc(env(safe-area-inset-top,0px) + 22px);left:var(--gutter);display:inline-flex;align-items:center;gap:10px;
+  font-size:13px;line-height:20px;text-decoration:none;color:var(--hero-ink)}
+.ticker .dot{background:var(--hero-ink);animation:pulse 2.4s ease-in-out infinite}
+.ticker .sl{opacity:.55}
+.ticker{text-shadow:0 1px 12px rgb(var(--shade) / .5)}
+.ticker .arr{transition:transform .2s}
+.ticker:hover .arr{transform:translateX(4px)}
+.wordmark{position:absolute;z-index:2;left:var(--gutter);bottom:clamp(14px,3vw,40px);margin:0;font-family:var(--font-display);font-weight:400;
+  font-size:clamp(96px,24vw,360px);line-height:.78;letter-spacing:-.065em;color:var(--hero-ink);white-space:nowrap;text-shadow:0 4px 40px rgb(var(--shade) / .35)}
+.wm-letters>span{display:inline-block;animation:rise .9s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i) * 70ms)}
+@keyframes rise{from{transform:translateY(.16em);filter:blur(10px)}to{transform:none;filter:none}}
+@keyframes pulse{50%{opacity:.25}}
+@media (max-width:699px){
+  .hero{min-height:min(84svh,720px);display:flex;flex-direction:column;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px) + 78px) var(--gutter) 26px}
+  .ticker{position:static;align-self:flex-start;margin-bottom:34px;flex-wrap:wrap}
+  .wordmark{position:relative;left:auto;bottom:auto;align-self:flex-start;margin-top:0;font-size:clamp(88px,31vw,210px)}
+}
+
+/* ---------- sections ---------- */
+.section{padding-block:clamp(72px,11vw,150px);border-top:1px solid var(--line)}
+.section.first{border-top:0}
+.sec-head{display:flex;align-items:center;gap:clamp(12px,2vw,28px);margin-bottom:clamp(32px,5vw,64px)}
+.sec-head .mark{flex:none;width:clamp(16px,2vw,26px);height:clamp(6px,.7vw,9px);border-radius:2px;background:var(--dash)}
+.sec-head h2{margin:0;font-family:var(--font-display);font-weight:400;font-size:clamp(54px,10.5vw,136px);line-height:.9;letter-spacing:-.055em;padding-bottom:.06em}
+.sec-head .rule{flex:1 1 40px;min-width:40px;height:6px;margin-top:.5em;background:repeating-linear-gradient(90deg,var(--dash) 0 16px,transparent 16px 28px)}
+.sec-head .tag{flex:none;font-family:var(--font-mono);font-size:12px;color:var(--dash)}
+@media (max-width:560px){
+  .sec-head{flex-wrap:wrap;row-gap:10px}
+  .sec-head .tag{order:-1;flex-basis:100%}
+}
+.lede{margin:0;font-size:clamp(18px,1.9vw,23px);line-height:1.4;letter-spacing:-.012em;max-width:52ch;text-wrap:pretty}
+.small{font-size:14px;color:var(--muted);margin:0}
+.label-rule{display:flex;align-items:center;gap:14px;margin:clamp(56px,8vw,96px) 0 18px;font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.label-rule::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.btn{display:inline-flex;align-items:center;gap:12px;height:48px;padding:0 20px;border:1px solid var(--ink);font:inherit;font-size:15px;line-height:1;
+  text-decoration:none;cursor:pointer;transition:background-color .15s,color .15s,border-color .15s}
+.btn svg{width:12px;height:12px}
+.btn-ink{background:var(--ink);color:var(--paper)}
+.btn-ink:hover{background:var(--dash);border-color:var(--dash);color:var(--paper)}
+.btn-line{background:transparent;color:var(--ink)}
+.btn-line:hover{background:var(--ink);color:var(--paper)}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+/* music */
+.release{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,72px);align-items:end}
+.cover{display:block;max-width:560px;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.cover:hover{transform:rotate(-1.2deg) scale(1.01)}
+.cover img{display:block;width:100%;aspect-ratio:1;object-fit:cover}
+.release-info{display:flex;flex-direction:column;align-items:flex-start;gap:22px;min-width:0}
+.meta{margin:0;font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.release-title{margin:0;font-family:var(--font-display);font-weight:400;font-size:clamp(48px,8vw,112px);line-height:.88;letter-spacing:-.055em}
+@media (max-width:760px){.release{grid-template-columns:minmax(0,1fr)}}
+
+.link-tiles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.link-tile{--cut:var(--paper);display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto 1fr auto auto;row-gap:6px;min-height:156px;padding:20px;
+  border:1px solid var(--ink);color:var(--ink);text-decoration:none;transition:background-color .15s,color .15s}
+.link-tile svg,.link-tile .pm{grid-column:1;grid-row:1;width:24px;height:24px}
+.link-tile .pm{font-family:var(--font-mono);font-size:17px;font-weight:500;line-height:24px;letter-spacing:-.05em}
+.lt-arrow{grid-column:3;grid-row:1;font-size:18px;line-height:1;transition:transform .2s}
+.lt-name{grid-column:1 / -1;grid-row:3;font-size:clamp(22px,2.2vw,28px);line-height:1.05;letter-spacing:-.03em}
+.lt-sub{grid-column:1 / -1;grid-row:4;font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.link-tile:hover,.link-tile:focus-visible{--cut:var(--ink);background:var(--ink);color:var(--paper)}
+.link-tile:hover .lt-sub,.link-tile:focus-visible .lt-sub{color:inherit;opacity:.7}
+.link-tile:hover .lt-arrow{transform:translate(3px,-3px)}
+@media (max-width:860px){.link-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:360px){.link-tiles{grid-template-columns:minmax(0,1fr)}}
+
+/* sample me: one photo card that opens the pack on untitled; text sits right, over the dark leaves */
+.pack-lede{margin-bottom:clamp(24px,4vw,40px)}
+.pack-card{position:relative;display:block;overflow:hidden;isolation:isolate;width:100%;aspect-ratio:16/9;max-height:680px;background:#2c3430;color:var(--hero-ink);text-decoration:none}
+.pack-card img{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;object-position:30% 45%;transition:transform .9s cubic-bezier(.2,.8,.2,1)}
+.pack-card:hover img{transform:scale(1.035)}
+.pack-card::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to left,rgb(var(--shade) / .62),rgb(var(--shade) / .18) 55%,rgb(var(--shade) / 0) 75%)}
+.pack-card-body{position:absolute;inset:0;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:22px;padding:clamp(18px,3.5vw,44px);text-align:right}
+.pack-card-text{display:flex;flex-direction:column;align-items:flex-end;gap:10px;min-width:0;text-shadow:0 2px 18px rgb(var(--shade) / .45)}
+.pack-card-kicker,.pack-card-meta{font-family:var(--font-mono);font-size:12px;opacity:.88}
+.pack-card-title{font-family:var(--font-display);font-size:clamp(44px,7vw,104px);line-height:.9;letter-spacing:-.055em}
+.pack-card-cta{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 20px;background:var(--hero-ink);color:#121613;font-size:15px;white-space:nowrap;text-shadow:none;transition:transform .2s}
+.pack-card:hover .pack-card-cta{transform:translateY(-2px)}
+@media (max-width:640px){
+  .pack-card{aspect-ratio:4/5;max-height:none}
+  .pack-card img{object-position:22% 50%}
+  .pack-card::after{background:linear-gradient(to top,rgb(var(--shade) / .78),rgb(var(--shade) / .1) 60%,rgb(var(--shade) / 0))}
+  .pack-card-body{justify-content:flex-end;align-items:flex-start;text-align:left}
+  .pack-card-text{align-items:flex-start}
+}
+
+
+/* about */
+.about{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(32px,6vw,96px);align-items:end}
+.about-big{margin:0;font-family:var(--font-display);font-weight:400;font-size:clamp(40px,6.4vw,92px);line-height:.95;letter-spacing:-.05em;text-wrap:balance}
+.about-copy p{margin:0;font-size:clamp(18px,1.7vw,22px);line-height:1.55;max-width:58ch;text-wrap:pretty}
+@media (max-width:820px){.about{grid-template-columns:minmax(0,1fr)}}
+
+/* night band: re-points the page tokens so every component inside goes dark */
+.night{--paper:var(--night);--ink:var(--night-ink);--muted:var(--night-muted);--line:var(--night-line);--dash:var(--night-sea);
+  background-color:var(--paper);color:var(--ink);border-top:0}
+.night{background-image:linear-gradient(rgb(var(--shade) / .74),rgb(var(--shade) / .88)),url("fog.jpg");background-size:cover;background-position:center 55%}
+.night.contact-photo{background-image:linear-gradient(rgb(var(--shade) / .5),rgb(var(--shade) / .78)),url("contact.jpg");background-position:center 62%;border-top:1px solid var(--night-line)}
+.rows{list-style:none;margin:0;padding:0}
+.row{display:grid;grid-template-columns:150px minmax(0,1fr) auto;align-items:center;gap:20px;padding:22px 0;border-top:1px solid var(--line)}
+.row:last-child{border-bottom:1px solid var(--line)}
+.row-when{font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.row-main{font-size:clamp(24px,3.2vw,40px);line-height:1.1;letter-spacing:-.03em}
+.row-main .t{color:var(--night-moss)}
+.row-main .sep{color:var(--muted);margin:0 .3em}
+.row-main .s{color:var(--night-sea)}
+.pill{font-family:var(--font-mono);font-size:12px;padding:7px 12px;border:1px solid var(--night-moss);color:var(--night-moss);text-decoration:none;white-space:nowrap;transition:background-color .15s,color .15s}
+.pill:hover{background:var(--night-moss);color:var(--night)}
+.night-foot{display:flex;flex-wrap:wrap;align-items:center;gap:20px;margin-top:36px}
+@media (max-width:700px){.row{grid-template-columns:minmax(0,1fr);gap:10px}.pill{justify-self:start}}
+
+/* contact */
+.contact-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:clamp(32px,6vw,96px);align-items:start;margin-top:48px}
+.k-label{margin:0 0 10px;font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.big-link{display:inline-block;font-size:clamp(38px,6.4vw,80px);line-height:1;letter-spacing:-.045em;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.14em;overflow-wrap:anywhere}
+.big-link:hover{color:var(--dash)}
+.contact-note{margin:20px 0 0;font-size:15px;color:var(--muted)}
+.contact-note a{color:var(--ink)}
+.side{margin:0}
+.side div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.side div:last-child{border-bottom:1px solid var(--line)}
+.side dt{font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.side dd{margin:0;text-align:right;min-width:0;overflow-wrap:anywhere}
+.side a{text-decoration:none;border-bottom:1px solid var(--line)}
+.side a:hover{color:var(--dash);border-color:currentColor}
+@media (max-width:820px){.contact-grid{grid-template-columns:minmax(0,1fr)}}
+
+.foot{border-top:1px solid var(--line);padding-block:28px calc(env(safe-area-inset-bottom,0px) + 96px)}
+.foot .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+
+/* ---------- fixed ui ---------- */
+.rail{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-right:0}
+.rail a{--cut:var(--paper);width:34px;height:34px;display:grid;place-items:center;color:var(--ink);border-bottom:1px solid var(--line);text-decoration:none;transition:background-color .15s,color .15s}
+.rail a:last-child{border-bottom:0}
+.rail a:hover{background:var(--ink);color:var(--paper);--cut:var(--ink)}
+.rail svg{width:16px;height:16px}
+.rail .pm{font-family:var(--font-mono);font-size:12px;font-weight:500;letter-spacing:-.05em}
+@media (max-width:719px){.rail{display:none}}
+
+.updates{position:fixed;left:var(--gutter);bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:35}
+.updates-btn{display:inline-flex;align-items:center;gap:10px;height:42px;padding:0 16px;border:0;background:var(--ink);color:var(--paper);font:inherit;font-size:13px;line-height:1;cursor:pointer}
+.updates-btn svg{width:10px;height:10px;transition:transform .2s}
+.updates-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
+.updates-panel{position:absolute;left:0;bottom:52px;width:min(320px,calc(100vw - 32px));display:flex;flex-direction:column;padding:18px;background:var(--paper);color:var(--ink);
+  border:1px solid var(--ink);box-shadow:0 18px 40px -18px rgba(0,0,0,.35)}
+.updates-panel p{margin:0 0 12px;font-size:21px;line-height:1.15;letter-spacing:-.025em}
+.updates-panel a{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:14px;text-decoration:none}
+.updates-panel a:hover{color:var(--dash)}
+
+.outnow{position:fixed;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:35;writing-mode:vertical-rl;transform:rotate(180deg);
+  padding:14px 10px;background:var(--ink);color:var(--paper);font-size:12px;text-decoration:none}
+.outnow:hover{background:var(--dash)}
+
+.menu{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;gap:32px;overflow-y:auto;background:var(--paper);color:var(--ink);
+  padding:calc(env(safe-area-inset-top,0px) + 14px) var(--gutter) calc(env(safe-area-inset-bottom,0px) + 28px)}
+.menu-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.menu-top .bar-logo{opacity:1}
+.menu nav{margin-top:auto;display:flex;flex-direction:column}
+.menu nav a{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:.1em 0;border-bottom:1px solid var(--line);text-decoration:none;
+  font-size:clamp(48px,9vw,112px);line-height:1;letter-spacing:-.055em}
+.menu nav a:hover{color:var(--dash)}
+.menu nav .k{font-family:var(--font-mono);font-size:12px;letter-spacing:0;color:var(--muted)}
+.menu-foot{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.menu-foot a{text-decoration:none}
+.menu-foot a:hover{color:var(--ink)}
+
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 72px);transform:translateX(-50%);z-index:70;max-width:calc(100vw - 32px);
+  padding:10px 14px;background:var(--ink);color:var(--paper);font-size:13px;overflow-wrap:anywhere;user-select:all}
+
+/* ---------- live edit mode (claude page only) ---------- */
+.wm-edit{display:none}
+body.editing .wm-letters{display:none}
+body.editing .wm-edit{display:inline-block}
+.here{flex:none;display:inline-flex;align-items:center;padding-left:8px}
+.here img{flex:none;width:28px;height:28px;margin-left:-8px;border-radius:50%;border:2px solid var(--paper);box-shadow:0 0 0 1.5px var(--pc,var(--line));background:var(--pc,var(--panel));object-fit:cover}
+.bar-btn[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+
+body.editing [data-edit]{outline:1.5px dashed color-mix(in srgb,var(--dash) 60%,transparent);outline-offset:4px;border-radius:2px;cursor:text}
+body.editing [data-edit]:hover{outline-color:var(--dash)}
+body.editing [data-edit]:focus{outline:2px solid var(--dash);background:color-mix(in srgb,var(--dash) 10%,transparent)}
+body.editing [data-edit].is-dirty{outline:1.5px solid var(--bloom)}
+[data-edit].is-peer{outline:2px solid var(--peer,var(--bloom))!important;outline-offset:4px;border-radius:2px}
+body.editing .updates,body.editing .outnow{display:none}
+body.editing .foot{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 170px)}
+
+.peer-tags{position:absolute;top:0;left:0;width:0;height:0;z-index:45;pointer-events:none}
+.peer-tag{position:absolute;display:inline-flex;align-items:center;gap:6px;padding:4px 8px;white-space:nowrap;transform:translateY(-100%);
+  background:var(--ink);color:var(--paper);font:500 11px/1 var(--font-mono);border-radius:3px}
+.peer-tag i{width:8px;height:8px;border-radius:50%;background:var(--peer,var(--bloom))}
+
+.edit-bar{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);z-index:55;transform:translateX(-50%);
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;width:min(780px,calc(100vw - 32px));padding:10px 10px 10px 14px;
+  background:var(--paper);color:var(--ink);border:1px solid var(--ink);box-shadow:0 22px 50px -20px rgba(0,0,0,.45)}
+.eb-people{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.person{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 10px 0 3px;border:1px solid var(--line);border-radius:14px;font:11px/1 var(--font-mono);color:var(--ink);max-width:100%}
+.person img{flex:none;width:22px;height:22px;border-radius:50%;box-shadow:0 0 0 2px var(--pc,var(--line));background:var(--pc,var(--panel));object-fit:cover}
+.person span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.person em{font-style:normal;color:var(--muted)}
+.eb-status{flex:1 1 180px;min-width:0;margin:0;font-size:13px;line-height:1.35;color:var(--muted)}
+.eb-actions{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+.eb-btn{height:36px;padding:0 14px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);font:inherit;font-size:13px;line-height:1;cursor:pointer;transition:background-color .15s,color .15s,border-color .15s}
+.eb-btn:hover{background:var(--ink);color:var(--paper)}
+.eb-primary{background:var(--ink);color:var(--paper)}
+.eb-primary:hover{background:var(--dash);border-color:var(--dash);color:var(--paper)}
+.eb-btn:disabled{opacity:.5;cursor:default}
+.eb-btn.armed{background:var(--bloom);border-color:var(--bloom);color:var(--paper)}
+@media (max-width:600px){
+  .edit-bar{bottom:calc(env(safe-area-inset-bottom,0px) + 10px);width:calc(100vw - 20px)}
+  .person{padding-right:3px}
+  .person span{display:none}
+  .eb-actions{width:100%;margin-left:0}
+  .eb-btn{flex:1}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="bar" id="bar">
+  <a class="bar-logo" href="#top">saesh</a>
+  <a class="bar-pill" href="#listen"><span class="dot"></span><span data-edit="pillTitle">the soloist</span> <span class="sl">/</span> <span data-edit="pillTag">out now</span></a>
+  <div class="bar-actions">
+    <span class="here" id="here" hidden></span>
+    <button class="bar-btn" id="edit-btn" type="button" aria-pressed="false" hidden>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M10.5 2.5l3 3L6 13H3v-3z"/></svg>
+      edit
+    </button>
+    <button class="bar-btn" id="share-btn" type="button" aria-label="copy link to this page">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M8 10V2M5 4.5 8 1.5l3 3M3 8v6h10V8"/></svg>
+      <span class="lbl-share">share</span>
+    </button>
+    <a class="bar-btn" href="#contact"><span class="dot"></span>contact</a>
+    <button class="bar-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 5.5h12M2 10.5h12"/></svg>
+      menu
+    </button>
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <div class="hero-wash" aria-hidden="true"><img src="hero.jpg" alt=""></div>
+  <a class="ticker" href="https://open.spotify.com/track/2fySdmD5GbRZpkK38L3YpZ" target="_blank" rel="noopener">
+    <span class="dot"></span><span data-edit="tickerLabel">new single</span> <span class="sl">/</span> <span data-edit="tickerDate">sep 25, 2026</span> <span class="sl">/</span> <span data-edit="tickerTitle">the soloist</span> <span class="arr" aria-hidden="true">&rarr;</span>
+  </a>
+  <h1 class="wordmark" aria-label="saesh"><span class="wm-letters" aria-hidden="true"><span style="--i:0">s</span><span style="--i:1">a</span><span style="--i:2">e</span><span style="--i:3">s</span><span style="--i:4">h</span></span><span class="wm-edit" data-edit="name">saesh</span></h1>
+</header>
+
+<main>
+
+  <section class="section first" id="listen" aria-labelledby="h-music">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="mark" aria-hidden="true"></span>
+        <h2 id="h-music" data-edit="musicHead">music</h2>
+        <span class="rule" aria-hidden="true"></span>
+        <span class="tag" data-edit="musicTag">out now</span>
+      </div>
+
+      <div class="release">
+        <a class="cover" href="https://open.spotify.com/track/2fySdmD5GbRZpkK38L3YpZ" target="_blank" rel="noopener">
+          <img src="cover.jpg" alt="cover art for the soloist: a pastel collage of notebook pages and sketches crossed by a row of blue dashes" width="640" height="640">
+        </a>
+        <div class="release-info">
+          <p class="meta" data-edit="releaseMeta">single · sep 25, 2026 · 1:23</p>
+          <h3 class="release-title" data-edit="releaseTitle">the soloist</h3>
+          <p class="lede" data-edit="releaseLede">out now on spotify.</p>
+          <a class="btn btn-ink" href="https://open.spotify.com/track/2fySdmD5GbRZpkK38L3YpZ" target="_blank" rel="noopener">
+            <span data-edit="releaseButton">play on spotify</span>
+            <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z" fill="currentColor"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <p class="label-rule" data-edit="streamLabel">stream &amp; follow</p>
+      <ul class="link-tiles">
+        <li><a class="link-tile" href="https://open.spotify.com/artist/1oTqW8kCCFPQ9fbMYZuMU6" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M6.8 9.4c3.6-1 7.6-.7 10.6 1M7.4 12.5c3-.8 6.2-.5 8.7.9M8 15.5c2.4-.6 4.8-.4 6.8.7" fill="none" stroke="var(--cut)" stroke-width="1.7" stroke-linecap="round"/></svg><span class="lt-arrow" aria-hidden="true">&nearr;</span><span class="lt-name">spotify</span><span class="lt-sub">artist page</span></a></li>
+        <li><a class="link-tile" href="https://www.instagram.com/saesh000/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r=".6" fill="currentColor"/></svg><span class="lt-arrow" aria-hidden="true">&nearr;</span><span class="lt-name">instagram</span><span class="lt-sub">@saesh000</span></a></li>
+        <li><a class="link-tile" href="https://untitled.stream/library/project/8BtS3PA5Q5lY2UeQYS2Ev" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 10v4M8 6v12M12 9v6M16 4v16M20 8v8"/></svg><span class="lt-arrow" aria-hidden="true">&nearr;</span><span class="lt-name">untitled</span><span class="lt-sub">2026 loop pack</span></a></li>
+        <li><a class="link-tile" href="https://plusminuslabs.co/waitlist" target="_blank" rel="noopener"><span class="pm" aria-hidden="true">+&minus;</span><span class="lt-arrow" aria-hidden="true">&nearr;</span><span class="lt-name">+&minus; labs</span><span class="lt-sub">plugins</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="samples" aria-labelledby="h-samples">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="mark" aria-hidden="true"></span>
+        <h2 id="h-samples" data-edit="samplesHead">sample me</h2>
+        <span class="rule" aria-hidden="true"></span>
+        <span class="tag" data-edit="samplesTag">saesh000 2026</span>
+      </div>
+
+      <p class="lede pack-lede" data-edit="samplesLede">every loop from 2026 in one pack on untitled, each one named with its tempo. pick one, flip it, and send what you made to @saesh000.</p>
+      <a class="pack-card" href="https://untitled.stream/library/project/8BtS3PA5Q5lY2UeQYS2Ev" target="_blank" rel="noopener">
+        <img src="railing.jpg" alt="someone in a plaid shirt leaning over a wet wooden railing above a stream" loading="lazy">
+        <span class="pack-card-body">
+          <span class="pack-card-text">
+            <span class="pack-card-kicker" data-edit="samplesCardKicker">untitled.stream</span>
+            <span class="pack-card-title" data-edit="samplesCardTitle">saesh000 2026</span>
+            <span class="pack-card-meta" data-edit="samplesCardMeta">105 loops · 2h 36m · 116–160 bpm</span>
+          </span>
+          <span class="pack-card-cta"><span data-edit="samplesButton">open the pack on untitled</span> <span aria-hidden="true">&nearr;</span></span>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section" id="about" aria-labelledby="h-about">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="mark" aria-hidden="true"></span>
+        <h2 id="h-about" data-edit="aboutHead">about</h2>
+        <span class="rule" aria-hidden="true"></span>
+        <span class="tag" data-edit="aboutTag">who</span>
+      </div>
+
+      <div class="about">
+        <div>
+          <p class="about-big" data-edit="aboutBig">music from my computer.</p>
+        </div>
+        <div class="about-copy">
+          <p data-edit="aboutP1">i am sharing ideas from my hard drive. i love the process of messing around with knobs and not knowing what i am doing. creating music.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section night" id="labs" aria-labelledby="h-labs">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="mark" aria-hidden="true"></span>
+        <h2 id="h-labs" data-edit="labsHead">plugins</h2>
+        <span class="rule" aria-hidden="true"></span>
+        <span class="tag" data-edit="labsTag">+− plus minus labs</span>
+      </div>
+
+      <p class="label-rule" style="margin-top:0" data-edit="labsLabel">coming soon</p>
+      <ul class="rows">
+        <li class="row">
+          <span class="row-when" data-edit="labsWhen">waitlist open</span>
+          <span class="row-main"><span class="t" data-edit="labsTitle">carom</span><span class="sep">&mdash;</span><span class="s" data-edit="labsSub">a visually intuitive delay</span></span>
+          <a class="pill" href="https://plusminuslabs.co/waitlist" target="_blank" rel="noopener"><span data-edit="labsPill">join waitlist</span></a>
+        </li>
+      </ul>
+
+      <div class="night-foot">
+        <a class="btn btn-line" href="https://plusminuslabs.co" target="_blank" rel="noopener">plusminuslabs.co <span aria-hidden="true">&rarr;</span></a>
+        <p class="small" data-edit="labsNote">plugins made intuitive. one email when carom launches.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section night contact-photo" id="contact" aria-labelledby="h-contact">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="mark" aria-hidden="true"></span>
+        <h2 id="h-contact" data-edit="contactHead">contact</h2>
+        <span class="rule" aria-hidden="true"></span>
+        <span class="tag" data-edit="contactTag">inquiries</span>
+      </div>
+
+      <p class="lede" data-edit="contactLede">collabs, features, placements, samples and press. the fastest way to reach saesh is a dm on instagram.</p>
+
+      <div class="contact-grid">
+        <div>
+          <p class="k-label" data-edit="contactLabel">dm</p>
+          <a class="big-link" href="https://www.instagram.com/saesh000/" target="_blank" rel="noopener"><span data-edit="contactHandle">@saesh000</span></a>
+          <p class="contact-note">or start with the music on <a href="https://open.spotify.com/artist/1oTqW8kCCFPQ9fbMYZuMU6" target="_blank" rel="noopener">spotify</a>.</p>
+        </div>
+        <dl class="side">
+          <div><dt>listen</dt><dd><a href="https://open.spotify.com/artist/1oTqW8kCCFPQ9fbMYZuMU6" target="_blank" rel="noopener">spotify</a></dd></div>
+          <div><dt>loops</dt><dd><a href="https://untitled.stream/library/project/8BtS3PA5Q5lY2UeQYS2Ev" target="_blank" rel="noopener">untitled.stream</a></dd></div>
+          <div><dt>plugins</dt><dd><a href="https://plusminuslabs.co" target="_blank" rel="noopener">plusminuslabs.co</a></dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap"><span data-edit="footLeft">© 2026 saesh</span><span data-edit="footRight">musicfrommycomputer</span></div>
+</footer>
+
+<nav class="rail" aria-label="saesh elsewhere">
+  <a href="https://open.spotify.com/artist/1oTqW8kCCFPQ9fbMYZuMU6" target="_blank" rel="noopener" title="spotify" aria-label="spotify"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M6.8 9.4c3.6-1 7.6-.7 10.6 1M7.4 12.5c3-.8 6.2-.5 8.7.9M8 15.5c2.4-.6 4.8-.4 6.8.7" fill="none" stroke="var(--cut)" stroke-width="1.7" stroke-linecap="round"/></svg>
+  </a>
+  <a href="https://www.instagram.com/saesh000/" target="_blank" rel="noopener" title="instagram" aria-label="instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r=".6" fill="currentColor"/></svg>
+  </a>
+  <a href="https://untitled.stream/library/project/8BtS3PA5Q5lY2UeQYS2Ev" target="_blank" rel="noopener" title="loop pack on untitled" aria-label="loop pack on untitled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 10v4M8 6v12M12 9v6M16 4v16M20 8v8"/></svg>
+  </a>
+  <a href="https://plusminuslabs.co/waitlist" target="_blank" rel="noopener" title="+- plus minus labs" aria-label="plus minus labs"><span class="pm" aria-hidden="true">+&minus;</span></a>
+</nav>
+
+<div class="updates">
+  <div class="updates-panel" id="updates-panel" hidden>
+    <p data-edit="updatesHead">hear the next one first.</p>
+    <a href="https://www.instagram.com/saesh000/" target="_blank" rel="noopener"><span>follow @saesh000 on instagram</span><span aria-hidden="true">&nearr;</span></a>
+    <a href="https://open.spotify.com/artist/1oTqW8kCCFPQ9fbMYZuMU6" target="_blank" rel="noopener"><span>follow saesh on spotify</span><span aria-hidden="true">&nearr;</span></a>
+    <a href="https://untitled.stream/library/project/8BtS3PA5Q5lY2UeQYS2Ev" target="_blank" rel="noopener"><span>the 2026 loop pack on untitled</span><span aria-hidden="true">&nearr;</span></a>
+    <a href="https://plusminuslabs.co/waitlist" target="_blank" rel="noopener"><span>carom waitlist at +&minus; labs</span><span aria-hidden="true">&nearr;</span></a>
+  </div>
+  <button class="updates-btn" id="updates-btn" type="button" aria-expanded="false" aria-controls="updates-panel">
+    <span class="dot"></span>get updates
+    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 6.5 5 3.5l3 3"/></svg>
+  </button>
+</div>
+
+<a class="outnow" href="https://open.spotify.com/track/2fySdmD5GbRZpkK38L3YpZ" target="_blank" rel="noopener"><span data-edit="outNow">out now</span></a>
+
+<div class="menu" id="menu" hidden role="dialog" aria-modal="true" aria-label="menu">
+  <div class="menu-top">
+    <a class="bar-logo" href="#top">saesh</a>
+    <button class="bar-btn" id="menu-close" type="button">close</button>
+  </div>
+  <nav aria-label="sections">
+    <a href="#listen"><span>music</span><span class="k">out now</span></a>
+    <a href="#samples"><span>sample me</span><span class="k">105 loops</span></a>
+    <a href="#about"><span>about</span><span class="k">who</span></a>
+    <a href="#labs"><span>plugins</span><span class="k">+&minus; labs</span></a>
+    <a href="#contact"><span>contact</span><span class="k">inquiries</span></a>
+  </nav>
+  <div class="menu-foot">
+    <a href="https://open.spotify.com/artist/1oTqW8kCCFPQ9fbMYZuMU6" target="_blank" rel="noopener">spotify</a>
+    <a href="https://www.instagram.com/saesh000/" target="_blank" rel="noopener">instagram</a>
+    <a href="https://untitled.stream/library/project/8BtS3PA5Q5lY2UeQYS2Ev" target="_blank" rel="noopener">untitled.stream</a>
+    <a href="https://plusminuslabs.co" target="_blank" rel="noopener">plusminuslabs.co</a>
+  </div>
+</div>
+
+<div class="edit-bar" id="edit-bar" role="region" aria-label="edit mode" hidden>
+  <div class="eb-people" id="eb-people"></div>
+  <p class="eb-status" id="eb-status" aria-live="polite"></p>
+  <div class="eb-actions">
+    <button class="eb-btn" id="eb-download" type="button" hidden>download html</button>
+    <button class="eb-btn" id="eb-discard" type="button" hidden>discard</button>
+    <button class="eb-btn eb-primary" id="eb-save" type="button" hidden>save</button>
+    <button class="eb-btn" id="eb-done" type="button">done</button>
+  </div>
+</div>
+<div class="peer-tags" id="peer-tags" aria-hidden="true"></div>
+<div class="toast" id="toast" role="status" hidden></div>
+</div>
+<script type="application/json" id="site-content">{
+ "name": "saesh",
+ "tickerLabel": "new single",
+ "tickerDate": "sep 25, 2026",
+ "tickerTitle": "the soloist",
+ "pillTitle": "the soloist",
+ "pillTag": "out now",
+ "musicHead": "music",
+ "musicTag": "out now",
+ "releaseMeta": "single · sep 25, 2026 · 1:23",
+ "releaseTitle": "the soloist",
+ "releaseLede": "out now on spotify.",
+ "releaseButton": "play on spotify",
+ "streamLabel": "stream & follow",
+ "samplesHead": "sample me",
+ "samplesTag": "saesh000 2026",
+ "samplesLede": "every loop from 2026 in one pack on untitled, each one named with its tempo. pick one, flip it, and send what you made to @saesh000.",
+ "samplesButton": "open the pack on untitled",
+ "aboutHead": "about",
+ "aboutTag": "who",
+ "aboutBig": "music from my computer.",
+ "aboutP1": "i am sharing ideas from my hard drive. i love the process of messing around with knobs and not knowing what i am doing. creating music.",
+ "labsHead": "plugins",
+ "labsTag": "+− plus minus labs",
+ "labsLabel": "coming soon",
+ "labsWhen": "waitlist open",
+ "labsTitle": "carom",
+ "labsSub": "a visually intuitive delay",
+ "labsPill": "join waitlist",
+ "labsNote": "plugins made intuitive. one email when carom launches.",
+ "contactHead": "contact",
+ "contactTag": "inquiries",
+ "contactLede": "collabs, features, placements, samples and press. the fastest way to reach saesh is a dm on instagram.",
+ "contactLabel": "dm",
+ "contactHandle": "@saesh000",
+ "updatesHead": "hear the next one first.",
+ "outNow": "out now",
+ "footLeft": "© 2026 saesh",
+ "footRight": "musicfrommycomputer",
+ "_head": "\u003ctitle>saesh\u003c/title>\n\u003cmeta name=\"description\" content=\"saesh makes music from a computer. the soloist is out now.\">\n\u003cmeta property=\"og:title\" content=\"saesh\">\n\u003cmeta property=\"og:description\" content=\"music from my computer. the soloist is out now.\">\n\u003cmeta property=\"og:image\" content=\"https://saesh000.net/cover.jpg\">\n\u003cmeta property=\"og:url\" content=\"https://saesh000.net/\">\n\u003cmeta property=\"og:type\" content=\"website\">\n\u003cmeta name=\"twitter:card\" content=\"summary_large_image\">\n\u003clink rel=\"canonical\" href=\"https://saesh000.net/\">\n\u003clink rel=\"icon\" href=\"cover.jpg\">\n\u003clink rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n\u003clink rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n\u003clink rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap\">",
+ "samplesCardKicker": "untitled.stream",
+ "samplesCardTitle": "saesh000 2026",
+ "samplesCardMeta": "105 loops · 2h 36m · 116–160 bpm"
+}</script>
+<script id="site-js">
+/* saesh site.
+   the page text lives in the "site-content" json block above this script; #app is drawn from it on load,
+   so change text there (or with edit mode on the claude page), not in the #app markup.
+   edit mode only exists on the claude page: saving republishes this whole document with the new text. */
+
+const LINKS = {
+  track: 'https://open.spotify.com/track/2fySdmD5GbRZpkK38L3YpZ',
+  artist: 'https://open.spotify.com/artist/1oTqW8kCCFPQ9fbMYZuMU6',
+  ig: 'https://www.instagram.com/saesh000/',
+  pack: 'https://untitled.stream/library/project/8BtS3PA5Q5lY2UeQYS2Ev',
+  untitled: 'https://untitled.stream/u/saesh000',
+  waitlist: 'https://plusminuslabs.co/waitlist',
+  labs: 'https://plusminuslabs.co',
+};
+
+// the claude page wrapper, in the exact shape the artifact tool publishes
+const ARTIFACT_SKELETON = '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>';
+const SCRIPT_OPEN = '<scr' + 'ipt';
+const SCRIPT_CLOSE = '</scr' + 'ipt>';
+
+const ICONS = {
+  spotify: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M6.8 9.4c3.6-1 7.6-.7 10.6 1M7.4 12.5c3-.8 6.2-.5 8.7.9M8 15.5c2.4-.6 4.8-.4 6.8.7" fill="none" stroke="var(--cut)" stroke-width="1.7" stroke-linecap="round"/></svg>',
+  instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r=".6" fill="currentColor"/></svg>',
+  untitled: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 10v4M8 6v12M12 9v6M16 4v16M20 8v8"/></svg>',
+  labs: '<span class="pm" aria-hidden="true">+&minus;</span>',
+};
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+}
+
+function renderApp(c) {
+  const t = k => esc(c[k]);
+  const ed = (k, tag = 'span', attrs = '') => `<${tag}${attrs ? ' ' + attrs : ''} data-edit="${k}">${t(k)}</${tag}>`;
+  const ext = 'target="_blank" rel="noopener"';
+  const head = (id, hk, tk) => `
+      <div class="sec-head">
+        <span class="mark" aria-hidden="true"></span>
+        ${ed(hk, 'h2', `id="${id}"`)}
+        <span class="rule" aria-hidden="true"></span>
+        ${ed(tk, 'span', 'class="tag"')}
+      </div>`;
+  const letters = Array.from(String(c.name)).map((ch, i) => `<span style="--i:${i}">${esc(ch)}</span>`).join('');
+  const nearr = '<span aria-hidden="true">&nearr;</span>';
+
+  return `
+<div class="bar" id="bar">
+  <a class="bar-logo" href="#top">${t('name')}</a>
+  <a class="bar-pill" href="#listen"><span class="dot"></span>${ed('pillTitle')} <span class="sl">/</span> ${ed('pillTag')}</a>
+  <div class="bar-actions">
+    <span class="here" id="here" hidden></span>
+    <button class="bar-btn" id="edit-btn" type="button" aria-pressed="false" hidden>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M10.5 2.5l3 3L6 13H3v-3z"/></svg>
+      edit
+    </button>
+    <button class="bar-btn" id="share-btn" type="button" aria-label="copy link to this page">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M8 10V2M5 4.5 8 1.5l3 3M3 8v6h10V8"/></svg>
+      <span class="lbl-share">share</span>
+    </button>
+    <a class="bar-btn" href="#contact"><span class="dot"></span>contact</a>
+    <button class="bar-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 5.5h12M2 10.5h12"/></svg>
+      menu
+    </button>
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <div class="hero-wash" aria-hidden="true"><img src="hero.jpg" alt=""></div>
+  <a class="ticker" href="${LINKS.track}" ${ext}>
+    <span class="dot"></span>${ed('tickerLabel')} <span class="sl">/</span> ${ed('tickerDate')} <span class="sl">/</span> ${ed('tickerTitle')} <span class="arr" aria-hidden="true">&rarr;</span>
+  </a>
+  <h1 class="wordmark" aria-label="${t('name')}"><span class="wm-letters" aria-hidden="true">${letters}</span>${ed('name', 'span', 'class="wm-edit"')}</h1>
+</header>
+
+<main>
+
+  <section class="section first" id="listen" aria-labelledby="h-music">
+    <div class="wrap">${head('h-music', 'musicHead', 'musicTag')}
+
+      <div class="release">
+        <a class="cover" href="${LINKS.track}" ${ext}>
+          <img src="cover.jpg" alt="cover art for the soloist: a pastel collage of notebook pages and sketches crossed by a row of blue dashes" width="640" height="640">
+        </a>
+        <div class="release-info">
+          ${ed('releaseMeta', 'p', 'class="meta"')}
+          ${ed('releaseTitle', 'h3', 'class="release-title"')}
+          ${ed('releaseLede', 'p', 'class="lede"')}
+          <a class="btn btn-ink" href="${LINKS.track}" ${ext}>
+            ${ed('releaseButton')}
+            <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z" fill="currentColor"/></svg>
+          </a>
+        </div>
+      </div>
+
+      ${ed('streamLabel', 'p', 'class="label-rule"')}
+      <ul class="link-tiles">
+        ${[
+          [LINKS.artist, ICONS.spotify, 'spotify', 'artist page'],
+          [LINKS.ig, ICONS.instagram, 'instagram', '@saesh000'],
+          [LINKS.pack, ICONS.untitled, 'untitled', '2026 loop pack'],
+          [LINKS.waitlist, ICONS.labs, '+&minus; labs', 'plugins'],
+        ].map(([href, icon, name, sub]) => `<li><a class="link-tile" href="${href}" ${ext}>${icon}<span class="lt-arrow" aria-hidden="true">&nearr;</span><span class="lt-name">${name}</span><span class="lt-sub">${sub}</span></a></li>`).join('\n        ')}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="samples" aria-labelledby="h-samples">
+    <div class="wrap">${head('h-samples', 'samplesHead', 'samplesTag')}
+
+      ${ed('samplesLede', 'p', 'class="lede pack-lede"')}
+      <a class="pack-card" href="${LINKS.pack}" ${ext}>
+        <img src="railing.jpg" alt="someone in a plaid shirt leaning over a wet wooden railing above a stream" loading="lazy">
+        <span class="pack-card-body">
+          <span class="pack-card-text">
+            ${ed('samplesCardKicker', 'span', 'class="pack-card-kicker"')}
+            ${ed('samplesCardTitle', 'span', 'class="pack-card-title"')}
+            ${ed('samplesCardMeta', 'span', 'class="pack-card-meta"')}
+          </span>
+          <span class="pack-card-cta">${ed('samplesButton')} ${nearr}</span>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section" id="about" aria-labelledby="h-about">
+    <div class="wrap">${head('h-about', 'aboutHead', 'aboutTag')}
+
+      <div class="about">
+        <div>
+          ${ed('aboutBig', 'p', 'class="about-big"')}
+        </div>
+        <div class="about-copy">
+          ${ed('aboutP1', 'p')}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section night" id="labs" aria-labelledby="h-labs">
+    <div class="wrap">${head('h-labs', 'labsHead', 'labsTag')}
+
+      ${ed('labsLabel', 'p', 'class="label-rule" style="margin-top:0"')}
+      <ul class="rows">
+        <li class="row">
+          ${ed('labsWhen', 'span', 'class="row-when"')}
+          <span class="row-main">${ed('labsTitle', 'span', 'class="t"')}<span class="sep">&mdash;</span>${ed('labsSub', 'span', 'class="s"')}</span>
+          <a class="pill" href="${LINKS.waitlist}" ${ext}>${ed('labsPill')}</a>
+        </li>
+      </ul>
+
+      <div class="night-foot">
+        <a class="btn btn-line" href="${LINKS.labs}" ${ext}>plusminuslabs.co <span aria-hidden="true">&rarr;</span></a>
+        ${ed('labsNote', 'p', 'class="small"')}
+      </div>
+    </div>
+  </section>
+
+  <section class="section night contact-photo" id="contact" aria-labelledby="h-contact">
+    <div class="wrap">${head('h-contact', 'contactHead', 'contactTag')}
+
+      ${ed('contactLede', 'p', 'class="lede"')}
+
+      <div class="contact-grid">
+        <div>
+          ${ed('contactLabel', 'p', 'class="k-label"')}
+          <a class="big-link" href="${LINKS.ig}" ${ext}>${ed('contactHandle')}</a>
+          <p class="contact-note">or start with the music on <a href="${LINKS.artist}" ${ext}>spotify</a>.</p>
+        </div>
+        <dl class="side">
+          <div><dt>listen</dt><dd><a href="${LINKS.artist}" ${ext}>spotify</a></dd></div>
+          <div><dt>loops</dt><dd><a href="${LINKS.pack}" ${ext}>untitled.stream</a></dd></div>
+          <div><dt>plugins</dt><dd><a href="${LINKS.labs}" ${ext}>plusminuslabs.co</a></dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">${ed('footLeft')}${ed('footRight')}</div>
+</footer>
+
+<nav class="rail" aria-label="${t('name')} elsewhere">
+  <a href="${LINKS.artist}" ${ext} title="spotify" aria-label="spotify">${ICONS.spotify}
+  </a>
+  <a href="${LINKS.ig}" ${ext} title="instagram" aria-label="instagram">${ICONS.instagram}
+  </a>
+  <a href="${LINKS.pack}" ${ext} title="loop pack on untitled" aria-label="loop pack on untitled">${ICONS.untitled}
+  </a>
+  <a href="${LINKS.waitlist}" ${ext} title="+- plus minus labs" aria-label="plus minus labs">${ICONS.labs}</a>
+</nav>
+
+<div class="updates">
+  <div class="updates-panel" id="updates-panel" hidden>
+    ${ed('updatesHead', 'p')}
+    <a href="${LINKS.ig}" ${ext}><span>follow @saesh000 on instagram</span>${nearr}</a>
+    <a href="${LINKS.artist}" ${ext}><span>follow saesh on spotify</span>${nearr}</a>
+    <a href="${LINKS.pack}" ${ext}><span>the 2026 loop pack on untitled</span>${nearr}</a>
+    <a href="${LINKS.waitlist}" ${ext}><span>carom waitlist at +&minus; labs</span>${nearr}</a>
+  </div>
+  <button class="updates-btn" id="updates-btn" type="button" aria-expanded="false" aria-controls="updates-panel">
+    <span class="dot"></span>get updates
+    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 6.5 5 3.5l3 3"/></svg>
+  </button>
+</div>
+
+<a class="outnow" href="${LINKS.track}" ${ext}>${ed('outNow')}</a>
+
+<div class="menu" id="menu" hidden role="dialog" aria-modal="true" aria-label="menu">
+  <div class="menu-top">
+    <a class="bar-logo" href="#top">${t('name')}</a>
+    <button class="bar-btn" id="menu-close" type="button">close</button>
+  </div>
+  <nav aria-label="sections">
+    <a href="#listen"><span>${t('musicHead')}</span><span class="k">${t('musicTag')}</span></a>
+    <a href="#samples"><span>${t('samplesHead')}</span><span class="k">105 loops</span></a>
+    <a href="#about"><span>${t('aboutHead')}</span><span class="k">${t('aboutTag')}</span></a>
+    <a href="#labs"><span>${t('labsHead')}</span><span class="k">+&minus; labs</span></a>
+    <a href="#contact"><span>${t('contactHead')}</span><span class="k">${t('contactTag')}</span></a>
+  </nav>
+  <div class="menu-foot">
+    <a href="${LINKS.artist}" ${ext}>spotify</a>
+    <a href="${LINKS.ig}" ${ext}>instagram</a>
+    <a href="${LINKS.pack}" ${ext}>untitled.stream</a>
+    <a href="${LINKS.labs}" ${ext}>plusminuslabs.co</a>
+  </div>
+</div>
+
+<div class="edit-bar" id="edit-bar" role="region" aria-label="edit mode" hidden>
+  <div class="eb-people" id="eb-people"></div>
+  <p class="eb-status" id="eb-status" aria-live="polite"></p>
+  <div class="eb-actions">
+    <button class="eb-btn" id="eb-download" type="button" hidden>download html</button>
+    <button class="eb-btn" id="eb-discard" type="button" hidden>discard</button>
+    <button class="eb-btn eb-primary" id="eb-save" type="button" hidden>save</button>
+    <button class="eb-btn" id="eb-done" type="button">done</button>
+  </div>
+</div>
+<div class="peer-tags" id="peer-tags" aria-hidden="true"></div>
+<div class="toast" id="toast" role="status" hidden></div>
+`;
+}
+
+// mode "site": a standalone index.html for github pages. "artifact": the claude page, skeleton included.
+// "fragment": the claude page without the skeleton, for the artifact tool.
+function buildDocument(c, mode, css, js) {
+  const json = JSON.stringify(c, null, 1).replace(/</g, '\\u003c');
+  const parts = [
+    `<style id="site-css">${css}</style>`,
+    `<div id="app">${renderApp(c)}</div>`,
+    `${SCRIPT_OPEN} type="application/json" id="site-content">${json}${SCRIPT_CLOSE}`,
+    `${SCRIPT_OPEN} id="site-js">${js}${SCRIPT_CLOSE}`,
+  ];
+  if (mode === 'site') {
+    return ['<!doctype html>', '<html lang="en">', '<head>', '<meta charset="utf-8">',
+      '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">',
+      c._head, parts[0], '</head>', '<body>', parts[1], parts[2], parts[3], '</body>', '</html>', ''].join('\n');
+  }
+  const body = [c._head, ...parts].join('\n') + '\n';
+  return mode === 'artifact' ? `${ARTIFACT_SKELETON}\n${body}\n</body></html>` : body;
+}
+
+function main() {
+  const $ = id => document.getElementById(id);
+  const content = JSON.parse($('site-content').textContent);
+  $('app').innerHTML = renderApp(content);
+
+  // top bar turns solid once the hero scrolls away
+  const bar = $('bar'), hero = $('top');
+  const onScroll = () => bar.classList.toggle('solid', window.scrollY > hero.offsetHeight - 90);
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll);
+  onScroll();
+
+  // menu
+  const menu = $('menu'), menuBtn = $('menu-btn'), menuClose = $('menu-close');
+  const setMenu = open => {
+    menu.hidden = !open;
+    menuBtn.setAttribute('aria-expanded', String(open));
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+    (open ? menuClose : menuBtn).focus({ preventScroll: true });
+  };
+  menuBtn.addEventListener('click', () => setMenu(true));
+  menuClose.addEventListener('click', () => setMenu(false));
+  menu.addEventListener('click', e => { if (e.target.closest('a[href^="#"]')) setMenu(false); });
+
+  // get updates panel
+  const up = $('updates-panel'), upBtn = $('updates-btn');
+  const setUp = open => { up.hidden = !open; upBtn.setAttribute('aria-expanded', String(open)); };
+  upBtn.addEventListener('click', () => setUp(up.hidden));
+  document.addEventListener('click', e => { if (!up.hidden && !e.target.closest('.updates')) setUp(false); });
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (!menu.hidden) setMenu(false);
+    if (!up.hidden) setUp(false);
+  });
+
+  // share: copy the page link
+  const toast = $('toast');
+  let toastTimer;
+  const say = (msg, ms = 2600) => {
+    toast.textContent = msg; toast.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { toast.hidden = true; }, ms);
+  };
+  $('share-btn').addEventListener('click', () => {
+    const url = location.href.split('#')[0];
+    try {
+      navigator.clipboard.writeText(url).then(() => say('link copied'), () => say(url, 6000));
+    } catch (_) { say(url, 6000); }
+  });
+
+  initEditing(content, $, say, { setMenu, setUp });
+}
+
+// live edit mode. only lights up on the claude page, for people who can edit it.
+// saving republishes the page; everyone's open copy reloads to it, and unsaved edits survive that reload.
+async function initEditing(content, $, say, ui) {
+  if (!window.claude || typeof window.claude.use !== 'function') return;
+  const use = name => window.claude.use(name).catch(() => null);
+  const [art, user, room, dl] = await Promise.all([use('artifact'), use('user'), use('room'), use('downloads')]);
+  const me = user ? await user.me() : null;
+  let canWrite = !!(art && me && me.canEdit);
+
+  const STASH = 'saesh-live-edit';
+  const WHERE = { top: 'the hero', listen: 'music', samples: 'sample me', about: 'about', labs: 'plugins', contact: 'contact' };
+  const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+  const clean = s => String(s).replace(/\s+/g, ' ').trim();
+  const fields = () => document.querySelectorAll('[data-edit]');
+
+  let editing = false, saving = false, discardArmed = 0;
+  let pending = {}, focusKey = null, focusStart = '', statusMsg = '';
+  let peers = [], profiles = {}, peerMap = {};
+
+  const editBtn = $('edit-btn'), editBar = $('edit-bar'), status = $('eb-status');
+  const saveBtn = $('eb-save'), discardBtn = $('eb-discard'), doneBtn = $('eb-done'), dlBtn = $('eb-download');
+  const here = $('here'), people = $('eb-people'), tags = $('peer-tags');
+
+  let plainOnly = false;
+  try { const probe = document.createElement('div'); probe.contentEditable = 'plaintext-only'; plainOnly = probe.contentEditable === 'plaintext-only'; } catch (_) {}
+
+  const stash = (extra = {}) => {
+    try { sessionStorage.setItem(STASH, JSON.stringify({ editing, pending, ...extra })); } catch (_) {}
+  };
+  const unstash = () => {
+    try { const v = JSON.parse(sessionStorage.getItem(STASH) || 'null'); sessionStorage.removeItem(STASH); return v; } catch (_) { return null; }
+  };
+  const where = key => {
+    const el = document.querySelector(`[data-edit="${key}"]`);
+    const sec = el && el.closest('section,header,footer');
+    return (sec && WHERE[sec.id]) || (sec && sec.tagName === 'FOOTER' ? 'the footer' : 'the page');
+  };
+
+  // ---- who is here ----
+  const idOf = p => p.by || (p.presence && typeof p.presence.uid === 'string' ? p.presence.uid : null);
+  const infoOf = p => {
+    const prof = profiles[idOf(p)];
+    return { name: (prof && prof.name) || 'someone', color: (prof && prof.color) || '', avatar: prof ? prof.avatarUrl : '' };
+  };
+  const others = () => {
+    const seen = new Set();
+    return peers.filter(p => {
+      if (p.isMe || p.kind !== 'viewer') return false;
+      const key = idOf(p) || p.peer;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
+
+  async function refreshPeople() {
+    const ids = [...new Set(peers.map(idOf).filter(Boolean))];
+    if (user && ids.length) profiles = await user.profiles(ids);
+    const list = others();
+
+    here.replaceChildren(...list.slice(0, 4).map(p => {
+      const info = infoOf(p), img = document.createElement('img');
+      img.alt = ''; if (info.avatar) img.src = info.avatar;
+      if (info.color) img.style.setProperty('--pc', info.color);
+      return img;
+    }));
+    here.hidden = !list.length;
+    here.title = list.length ? 'here now: ' + list.map(p => infoOf(p).name).join(', ') : '';
+
+    const chipFor = (name, color, avatar, note) => {
+      const chip = document.createElement('span'), img = document.createElement('img'), label = document.createElement('span');
+      chip.className = 'person'; img.alt = ''; if (avatar) img.src = avatar;
+      if (color) chip.style.setProperty('--pc', color);
+      label.textContent = name;
+      if (note) { const em = document.createElement('em'); em.textContent = ' · ' + note; label.append(em); }
+      chip.title = name + (note ? ' · ' + note : '');
+      chip.append(img, label);
+      return chip;
+    };
+    people.replaceChildren(
+      chipFor('you', me ? me.color : '', me ? me.avatarUrl : '', ''),
+      ...list.map(p => {
+        const info = infoOf(p), pr = p.presence || {};
+        const note = typeof pr.editing === 'string' && has(content, pr.editing) ? 'editing ' + where(pr.editing)
+          : pr.mode === 'edit' ? 'editing' : 'viewing';
+        return chipFor(info.name, info.color, info.avatar, note);
+      }));
+    applyAll();
+  }
+
+  // ---- drawing everyone's text ----
+  function applyAll() {
+    peerMap = {};
+    for (const p of others()) {
+      const pr = p.presence || {}, info = infoOf(p);
+      const theirs = pr.drafts && typeof pr.drafts === 'object' ? pr.drafts : {};
+      for (const k of Object.keys(theirs)) {
+        if (has(content, k) && k !== '_head' && typeof theirs[k] === 'string') peerMap[k] = { ...info, text: theirs[k], typing: pr.editing === k };
+      }
+      if (typeof pr.editing === 'string' && has(content, pr.editing) && !peerMap[pr.editing]) peerMap[pr.editing] = { ...info, text: null, typing: true };
+    }
+    fields().forEach(el => {
+      const k = el.dataset.edit;
+      if (!has(content, k)) return;
+      const mine = has(pending, k), peer = peerMap[k];
+      if (el !== document.activeElement) {
+        const text = mine ? pending[k] : peer && peer.text != null ? peer.text : content[k];
+        if (el.textContent !== text) el.textContent = text;
+      }
+      el.classList.toggle('is-dirty', mine);
+      el.classList.toggle('is-peer', !!peer);
+      if (peer && peer.color) el.style.setProperty('--peer', peer.color); else el.style.removeProperty('--peer');
+    });
+    drawTags();
+  }
+
+  function drawTags() {
+    const out = [];
+    for (const [k, info] of Object.entries(peerMap)) {
+      const el = [...document.querySelectorAll(`[data-edit="${k}"]`)].find(n => n.getClientRects().length && !n.closest('.bar,.updates,.outnow,.menu'));
+      if (!el) continue;
+      const r = el.getBoundingClientRect(), tag = document.createElement('span'), dot = document.createElement('i');
+      tag.className = 'peer-tag';
+      if (info.color) tag.style.setProperty('--peer', info.color);
+      tag.append(dot, document.createTextNode(`${info.name} · ${info.typing ? 'typing' : 'unsaved'}${has(pending, k) ? ' · you changed this too' : ''}`));
+      tag.style.top = `${r.top + scrollY - 8}px`;
+      tag.style.left = `${Math.max(8, Math.min(r.left + scrollX, scrollX + innerWidth - 220))}px`;
+      out.push(tag);
+    }
+    tags.replaceChildren(...out);
+  }
+  let tagFrame = 0;
+  const tagsSoon = () => { if (!tagFrame) tagFrame = requestAnimationFrame(() => { tagFrame = 0; drawTags(); }); };
+  addEventListener('scroll', tagsSoon, { passive: true });
+  addEventListener('resize', tagsSoon);
+
+  // ---- presence ----
+  const drafts = () => {
+    const out = {}; let size = 2;
+    for (const [k, v] of Object.entries(pending)) {
+      const text = v.length > 600 ? v.slice(0, 600) + '…' : v;
+      const add = k.length + JSON.stringify(text).length + 4;
+      if (size + add > 2800) break;
+      out[k] = text; size += add;
+    }
+    return out;
+  };
+  const sendPresence = () => {
+    if (!room) return;
+    room.presence({ uid: me && me.id, mode: editing ? 'edit' : 'view', editing: editing ? focusKey : null, drafts: editing ? drafts() : null }).catch(() => {});
+  };
+
+  // ---- the edit bar ----
+  const setStatus = msg => { statusMsg = msg; updateBar(); };
+  function updateBar() {
+    const n = Object.keys(pending).length;
+    saveBtn.hidden = discardBtn.hidden = !n;
+    doneBtn.hidden = !!n;
+    dlBtn.hidden = !dl;
+    saveBtn.textContent = saving ? 'saving…' : `save ${n} change${n === 1 ? '' : 's'}`;
+    saveBtn.disabled = discardBtn.disabled = saving;
+    status.textContent = statusMsg || (n
+      ? `${n} unsaved change${n === 1 ? '' : 's'}. everyone here sees them live; save to keep them.`
+      : 'click any outlined text to change it. enter to finish, esc to undo.');
+  }
+
+  function setField(key, value) {
+    if (value === content[key]) delete pending[key]; else pending[key] = value;
+    statusMsg = '';
+    updateBar(); stash(); sendPresence();
+  }
+
+  function enterEdit() {
+    if (!canWrite) return;
+    editing = true;
+    document.body.classList.add('editing');
+    ui.setMenu && !$('menu').hidden && ui.setMenu(false);
+    fields().forEach(el => {
+      el.setAttribute('contenteditable', plainOnly ? 'plaintext-only' : 'true');
+      el.setAttribute('spellcheck', 'true');
+    });
+    editBar.hidden = false;
+    editBtn.setAttribute('aria-pressed', 'true');
+    updateBar(); stash(); sendPresence(); refreshPeople();
+  }
+  function exitEdit() {
+    if (Object.keys(pending).length) { setStatus('save or discard your changes first.'); return; }
+    editing = false; focusKey = null;
+    document.body.classList.remove('editing');
+    fields().forEach(el => { el.removeAttribute('contenteditable'); el.removeAttribute('spellcheck'); });
+    editBar.hidden = true;
+    editBtn.setAttribute('aria-pressed', 'false');
+    statusMsg = '';
+    stash(); sendPresence(); refreshPeople();
+  }
+
+  async function save() {
+    if (saving || !Object.keys(pending).length) return;
+    if (document.activeElement && document.activeElement.matches('[data-edit]')) document.activeElement.blur();
+    saving = true; statusMsg = ''; updateBar();
+    stash({ saving: true });
+    try {
+      await art.publish(buildDocument({ ...content, ...pending }, 'artifact', $('site-css').textContent, $('site-js').textContent));
+      setStatus('saved. loading the new version…');
+    } catch (e) {
+      const code = e && e.code;
+      saving = false;
+      if (code === 'conflict') { setStatus('someone saved first. reloading their version with your edits kept…'); return; }
+      stash();
+      if (['not_writer', 'not_granted', 'consent_required', 'not_declared', 'capability_disabled', 'capability_removed'].includes(code)) {
+        canWrite = false; editBtn.hidden = true;
+        setStatus("you can view this page but can't save changes to it. ask the owner for edit access.");
+      } else if (code === 'rate_limited') setStatus('saving too often. wait a few seconds, then save again.');
+      else if (code === 'too_large') setStatus('the page is too big to save. shorten some text and try again.');
+      else setStatus("couldn't save just now. try again in a moment.");
+    }
+  }
+
+  // ---- typing ----
+  document.addEventListener('click', e => {
+    if (!editing) return;
+    const link = e.target.closest('a');
+    if (!link || link.closest('.edit-bar')) return;
+    if (e.target.closest('[data-edit]') || !(link.getAttribute('href') || '').startsWith('#')) e.preventDefault();
+  }, true);
+  document.addEventListener('focusin', e => {
+    const el = e.target.closest && e.target.closest('[data-edit]');
+    if (!editing || !el) return;
+    focusKey = el.dataset.edit; focusStart = el.textContent;
+    sendPresence(); refreshPeople();
+  });
+  document.addEventListener('focusout', e => {
+    const el = e.target.closest && e.target.closest('[data-edit]');
+    if (!editing || !el) return;
+    const key = el.dataset.edit;
+    let value = clean(el.textContent);
+    if (!value) { value = clean(focusStart) || content[key]; say("text can't be empty, so it went back to what it was."); }
+    el.textContent = value;
+    focusKey = null;
+    setField(key, value);
+    applyAll();
+  });
+  document.addEventListener('input', e => {
+    const el = e.target.closest && e.target.closest('[data-edit]');
+    if (!editing || !el) return;
+    const value = clean(el.textContent);
+    if (value) setField(el.dataset.edit, value);
+  });
+  document.addEventListener('keydown', e => {
+    const el = e.target.closest && e.target.closest('[data-edit]');
+    if (!editing || !el) return;
+    if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
+    if (e.key === 'Escape') { e.stopPropagation(); el.textContent = focusStart; el.blur(); }
+  }, true);
+  document.addEventListener('paste', e => {
+    const el = e.target.closest && e.target.closest('[data-edit]');
+    if (!editing || !el || plainOnly) return;
+    e.preventDefault();
+    document.execCommand('insertText', false, clean((e.clipboardData || {}).getData ? e.clipboardData.getData('text/plain') : ''));
+  });
+  document.addEventListener('drop', e => { if (editing && e.target.closest && e.target.closest('[data-edit]')) e.preventDefault(); });
+
+  // ---- buttons ----
+  editBtn.addEventListener('click', () => (editing ? exitEdit() : enterEdit()));
+  doneBtn.addEventListener('click', exitEdit);
+  saveBtn.addEventListener('click', save);
+  discardBtn.addEventListener('click', () => {
+    if (Date.now() - discardArmed > 3000) {
+      discardArmed = Date.now();
+      discardBtn.textContent = 'discard all?'; discardBtn.classList.add('armed');
+      setTimeout(() => { discardBtn.textContent = 'discard'; discardBtn.classList.remove('armed'); }, 3000);
+      return;
+    }
+    discardArmed = 0; discardBtn.textContent = 'discard'; discardBtn.classList.remove('armed');
+    pending = {}; statusMsg = '';
+    applyAll(); updateBar(); stash(); sendPresence();
+  });
+  dlBtn.addEventListener('click', () => {
+    if (!dl) return;
+    const html = buildDocument({ ...content, ...pending }, 'site', $('site-css').textContent, $('site-js').textContent);
+    dl.save({ filename: 'index.html', data: html }).then(r => {
+      if (r && r.status === 'saved') say('saved index.html. upload it to github to update saesh000.net.', 5000);
+    }, e => {
+      const code = e && e.code;
+      if (code === 'declined') return;
+      if (['unavailable', 'not_granted', 'capability_disabled', 'capability_removed'].includes(code)) dlBtn.hidden = true;
+      say(code === 'rate_limited' ? 'a download is already waiting for you to confirm.' : "couldn't download the file here.");
+    });
+  });
+
+  // ---- start ----
+  if (room) {
+    room.onPeers(change => { peers = change.peers; refreshPeople(); }, () => {});
+    sendPresence();
+  }
+
+  const prev = unstash();
+  if (!canWrite) return;
+  editBtn.hidden = false;
+  if (prev && prev.editing) {
+    const kept = {};
+    for (const [k, v] of Object.entries(prev.pending || {})) if (has(content, k) && typeof v === 'string' && v !== content[k]) kept[k] = v;
+    pending = kept;
+    enterEdit();
+    applyAll();
+    const n = Object.keys(kept).length;
+    if (prev.saving && !n) say('saved. everyone with the page open has the new version.', 3500);
+    else if (prev.saving) setStatus('someone saved just before you. your edits are still here, so press save again.');
+    else say(n ? 'new changes just came in. your unsaved edits are still here.' : 'new changes just came in.', 3500);
+  }
+}
+
+if (typeof document !== 'undefined') main();
+</script>
+</body>
+</html>
