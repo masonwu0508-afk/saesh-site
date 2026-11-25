@@ -140,7 +140,7 @@ a{color:inherit}
 .release{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,72px);align-items:end}
 .cover{display:block;max-width:560px;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
 .cover:hover{transform:rotate(-1.2deg) scale(1.01)}
-.cover img{display:block;width:100%;aspect-ratio:1;object-fit:cover}
+.cover img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover}
 .release-info{display:flex;flex-direction:column;align-items:flex-start;gap:22px;min-width:0}
 .meta{margin:0;font-family:var(--font-mono);font-size:15px;color:var(--muted)}
 .release-title{margin:0;font-family:var(--font-display);font-weight:400;font-size:clamp(48px,8vw,112px);line-height:.88;letter-spacing:0}
@@ -190,6 +190,8 @@ a{color:inherit}
 .duo{list-style:none;margin:clamp(26px,3vw,40px) 0 0;padding:0;display:flex;flex-wrap:wrap;gap:14px 36px}
 .duo li{font-size:clamp(28px,3vw,40px);line-height:1.1;padding:0 .12em;background:linear-gradient(var(--hl),var(--hl)) 0 62% / 100% .34em no-repeat}
 .duo li.limes{--hl:color-mix(in srgb,var(--lime) 70%,transparent)}
+.duo a{text-decoration:none}
+.duo a:hover{color:var(--dash)}
 
 /* night band: re-points the page tokens so every component inside goes dark */
 .night{--paper:var(--night);--ink:var(--night-ink);--muted:var(--night-muted);--line:var(--night-line);--dash:var(--night-sea);
@@ -430,8 +432,8 @@ body.editing .foot{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 170px)}
         <div class="about-copy">
           <p data-edit="aboutP1">saesh is a duo: lemons and limes. we are sharing ideas from our hard drives. we love the process of messing around with knobs and not knowing what we are doing. creating music.</p>
           <ul class="duo" aria-label="the duo">
-            <li class="lemons"><span data-edit="memberA">lemons</span></li>
-            <li class="limes"><span data-edit="memberB">limes</span></li>
+            <li class="lemons"><a href="https://www.instagram.com/lemonsforty/" target="_blank" rel="noopener"><span data-edit="memberA">lemons</span></a></li>
+            <li class="limes"><a href="https://www.instagram.com/saesh000/" target="_blank" rel="noopener"><span data-edit="memberB">limes</span></a></li>
           </ul>
         </div>
       </div>
@@ -612,6 +614,7 @@ const LINKS = {
   untitled: 'https://untitled.stream/u/saesh000',
   waitlist: 'https://plusminuslabs.co/waitlist',
   labs: 'https://plusminuslabs.co',
+  lemons: 'https://www.instagram.com/lemonsforty/',
 };
 
 // the claude page wrapper, in the exact shape the artifact tool publishes
@@ -732,8 +735,8 @@ function renderApp(c) {
         <div class="about-copy">
           ${ed('aboutP1', 'p')}
           <ul class="duo" aria-label="the duo">
-            <li class="lemons">${ed('memberA')}</li>
-            <li class="limes">${ed('memberB')}</li>
+            <li class="lemons"><a href="${LINKS.lemons}" ${ext}>${ed('memberA')}</a></li>
+            <li class="limes"><a href="${LINKS.ig}" ${ext}>${ed('memberB')}</a></li>
           </ul>
         </div>
       </div>
